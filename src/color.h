@@ -1,5 +1,5 @@
 //
-// Created by egece on 27/01/2024.
+// Created by eee on 27/01/2024.
 //
 
 #ifndef COLOR_H
