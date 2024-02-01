@@ -22,7 +22,7 @@ public:
 
     void clear() {objects.clear();}
 
-    void add(shared_ptr<hittable>& object) {
+    void add(shared_ptr<hittable> object) {
         objects.push_back(object);
     }
 

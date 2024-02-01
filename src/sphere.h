@@ -11,7 +11,7 @@ class sphere : public hittable {
 public:
     sphere(const point3& _center, const double _radius): center(_center), radius(_radius) {}
 
-    // Return if the ray hits the hit record
+    // Returns true if the ray hits this sphere
     bool hit(const ray& r, double ray_tmin, double ray_tmax, hit_record& rec) const override {
         vec3 oc = r.origin() - center;
         auto a = r.direction().length_squared();
