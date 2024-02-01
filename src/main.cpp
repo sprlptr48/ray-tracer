@@ -18,7 +18,7 @@ const std::string FILE_OUTPUT = "../image.ppm";
 
 color ray_color(const ray& r, const hittable& world) {
     hit_record hitrec;
-    if(world.hit(r, 0, infinity, hitrec)) {
+    if(world.hit(r, interval(0, infinity), hitrec)) {
         return 0.5 * (hitrec.normal + color(1, 1, 1));
     }
     vec3 unit_direction = unit_vector(r.direction());
@@ -46,7 +46,7 @@ int main() {
     auto viewport_upper_left = camera_center - vec3(0, 0, focal_length) - viewport_u/2 - viewport_v/2;
     auto pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
 
-    //Create a world with two spheres for now
+    //Create a world with three spheres for now
     hittable_list world;
     world.add(make_shared<sphere>(point3(0, 0, -1), 0.5));
     world.add(make_shared<sphere>(point3(0,-100.5,-1), 100));
