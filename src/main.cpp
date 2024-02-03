@@ -18,6 +18,8 @@ int main() {
 
     camera cam;
 
+    cam.render(world); // this is done to remove const warnings in CLion
+
     cam.aspect_ratio = 16.0 / 9.0;
     cam.image_width  = 400;
 
