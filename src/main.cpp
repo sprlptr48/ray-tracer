@@ -1,6 +1,3 @@
-#include <iostream>
-#include <fstream>
-
 #include "camera.h"
 #include "rtweekend.h"
 #include "vec3.h"

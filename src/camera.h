@@ -5,8 +5,10 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "rtweekend.h"
+#include <fstream>
+#include <iostream>
 
+#include "rtweekend.h"
 #include "color.h"
 #include "hittable.h"
 
