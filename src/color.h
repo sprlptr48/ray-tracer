@@ -13,6 +13,11 @@
 // Alias for vector class
 using color = vec3;
 
+inline double linear_to_gamma(double linear_component)
+{
+    return sqrt(linear_component);
+}
+
     /* Write the translated [0,255] value of each color component.
        Takes a value in range 0-1.
     */
@@ -26,6 +31,11 @@ void write_color(std::ofstream &file, color pixel_color, int samples_per_pixel) 
     r *= scale;
     g *= scale;
     b *= scale;
+
+    // Apply linear to gamma transform.
+    r = linear_to_gamma(r);
+    g = linear_to_gamma(g);
+    b = linear_to_gamma(b);
 
     static const interval intensity(0.000, 0.999);
     file << static_cast<int>(256 * intensity.clamp(r)) << ' '

@@ -8,6 +8,7 @@ int main() {
     hittable_list world;
 
     world.add(make_shared<sphere>(point3(0,0,-1), 0.5));
+    world.add(make_shared<sphere>(point3(3,3,-10), 3));
     world.add(make_shared<sphere>(point3(0,-100.5,-1), 100));
 
     camera cam;
@@ -16,8 +17,9 @@ int main() {
     cam.render(world); // this is done to remove const warnings in CLion
 
     cam.aspect_ratio = 16.0 / 9.0;
-    cam.image_width  = 400;
-    cam.samples_per_pixel = 10;
+    cam.image_width  = 600;
+    cam.samples_per_pixel = 5;
+    cam.max_depth = 30;
 
     cam.render(world);
 }
