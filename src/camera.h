@@ -16,6 +16,7 @@
 
 class camera {
 public:
+    char camName = ' '; // Camera name for debug
     double aspect_ratio = 1.0; // init to random value before actually changing by user
     int    image_width  = 10;
     int    samples_per_pixel = 10;
@@ -41,7 +42,7 @@ public:
             }
         }
 
-        std::clog << "\rDone.                 \n";
+        std::clog << "\rRendering of " << camName << " Done.  \n";
         file_stream.close();
     }
 
@@ -56,6 +57,7 @@ private:
     void initialize() {
         file_stream.open(FILE_OUTPUT, std::ios::out | std::ios::trunc);
 
+        // Calculate image height from width
         image_height = static_cast<int>(image_width / aspect_ratio);
         image_height = (image_height < 1) ? 1 : image_height;
 
