@@ -20,6 +20,7 @@ public:
     double aspect_ratio = 1.0; // init to random value before actually changing by user
     int    image_width  = 10;
     int    samples_per_pixel = 10;
+    int    max_depth = 10; // Max number of bounces
 
     camera() = default; // we use initialize in code so not needed
 
@@ -36,7 +37,7 @@ public:
                 color pixel_color(0,0,0);
                 for (int sample = 0; sample < samples_per_pixel; sample++) {
                     ray r = get_ray(i, j);
-                    pixel_color += ray_color(r, world);
+                    pixel_color += ray_color(r, max_depth, world);
                 }
                 write_color(file_stream, pixel_color, samples_per_pixel);
             }
@@ -82,15 +83,19 @@ private:
         pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
     }
 
-    color ray_color(const ray& r, const hittable& world) const{
+    color ray_color(const ray& r, int depth, const hittable& world) const{
         hit_record hitrec;
-        if(world.hit(r, interval(0, infinity), hitrec)) {
+
+        if (depth <= 0) {
+            return color(0, 0, 0);
+        }
+        if(world.hit(r, interval(0.00250, infinity), hitrec)) {
             vec3 direction = random_on_hemisphere(hitrec.normal);
-            return 0.5 * ray_color(ray(hitrec.p, direction), world); // mult by 0.5 because sphere is gray
+            return 0.5 * ray_color(ray(hitrec.p, direction), depth-1, world); // multiply by 0.5 because sphere is gray
         }
         const vec3 unit_direction = unit_vector(r.direction());
         const auto a = 0.5*(unit_direction.y() + 1.0);
-        return (1.0-a)*color(0.71, 0.49, 0.27) + a*color(0.35, 0.85, 1.0); // linear interp
+        return (1.0-a)*color(0.9, 0.49, 0.27) + a*color(0.35, 0.85, 1.0); // linear interp
     }
 
 
