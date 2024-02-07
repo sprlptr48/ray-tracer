@@ -9,7 +9,8 @@
 
 class sphere : public hittable {
 public:
-    sphere(const point3& _center, const double _radius): center(_center), radius(_radius) {}
+    sphere(const point3& _center, const double _radius, shared_ptr<material> _mat):
+        center(_center), radius(_radius), mat(_mat) {}
 
     // Returns true if the ray hits this sphere
     bool hit(const ray& r, interval ray_t, hit_record& rec) const override {
@@ -32,6 +33,7 @@ public:
         vec3 outward_normal = (rec.p - center) / radius;
         rec.set_face_normal(r, outward_normal);
         rec.t = root;
+        rec.mat = mat;
 
         return true;
     }
@@ -40,6 +42,7 @@ public:
 private:
     point3 center;
     double radius;
+    shared_ptr<material> mat;
 
 };
 
