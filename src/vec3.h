@@ -49,6 +49,16 @@ public:
         return vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2];
     }
 
+    bool near_zero() const {
+        auto s = 1e-8;
+        return (fabs(vec[0]) < s) && (fabs(vec[1]) < s) && (fabs(vec[2]) < s);
+    }
+
+    bool ex_near_zero() const {
+        auto s = 1e-8;
+        return (fabs(vec[0]) < s) || (fabs(vec[1]) < s) || (fabs(vec[2]) < s);
+    }
+
     static vec3 random() {
         return vec3(random_double(), random_double(), random_double());
     }
@@ -122,6 +132,11 @@ inline vec3 random_on_hemisphere(const vec3& normal) {
     } else {
         return -on_unit_sphere;
     }
+}
+
+// https://raytracing.github.io/books/RayTracingInOneWeekend.html#metal/mirroredlightreflection
+vec3 reflect(const vec3& v, const vec3& n) {
+    return v - 2 * dot(v, n) * n;
 }
 
 

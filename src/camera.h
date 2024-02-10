@@ -13,6 +13,7 @@
 #include "hittable.h"
 #include "ray.h"
 #include "vec3.h"
+#include "material.h"
 
 class camera {
 public:
@@ -90,9 +91,12 @@ private:
             return color(0, 0, 0);
         }
         if(world.hit(r, interval(0.00125, infinity), hitrec)) {
-            vec3 direction = hitrec.normal + random_unit_vector();
-            return 0.5 * ray_color(ray(hitrec.p, direction), depth-1, world); // multiply by 0.5 because sphere is gray
-        }
+            ray scattered;
+            color attenuation;
+            if (hitrec.mat->scatter(r, hitrec, attenuation, scattered)) {
+                return attenuation * ray_color(scattered, depth-1, world);
+            }
+            return color(0,0,0);        }
         const vec3 unit_direction = unit_vector(r.direction());
         const auto a = 0.5*(unit_direction.y() + 1.0);
         return (1.0-a)*color(0.71, 0.49, 0.27) + a*color(0.35, 0.85, 1.0); // linear interp
