@@ -1,3 +1,5 @@
+#include <omp.h>
+
 #include "camera.h"
 #include "vec3.h"
 #include "hittable.h"
@@ -64,5 +66,11 @@ int main() {
     cam.defocus_angle = 5.0;//0.6;
     cam.focus_dist    = 10.0;
 
+    double startTime = omp_get_wtime();
+
     cam.render(world);
+
+    double endTime = omp_get_wtime();
+    std::cout << "Rendering of the scene took " << (endTime - startTime) << " seconds\n";
+
 }

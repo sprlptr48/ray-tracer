@@ -7,6 +7,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <omp.h>
 
 #include "rtweekend.h"
 #include "color.h"
@@ -40,12 +41,13 @@ public:
         for (int j = 0; j < image_height; ++j) {
             std::clog << "\rScanlines remaining: " << (image_height - j) << ' ' << std::flush;
             for (int i = 0; i < image_width; ++i) {
-                auto pixel_center = pixel00_loc + (i * pixel_delta_u) + (j * pixel_delta_v);
-                auto ray_direction = pixel_center - center;
-
                 color pixel_color(0,0,0);
+
+                // Define overloaded addition reduction for color (vec3)
+                #pragma omp declare reduction(sum : color : omp_out = color(omp_out.x() + omp_in.x(), omp_out.y() + omp_in.y(), omp_out.z() + omp_in.z()))
+                #pragma omp parallel for num_threads(num_cpu_threads) reduction(sum: pixel_color) // Run all samples in parallel
                 for (int sample = 0; sample < samples_per_pixel; sample++) {
-                    ray r = get_ray(i, j);
+                    const ray r = get_ray(i, j);
                     pixel_color += ray_color(r, max_depth, world);
                 }
                 write_color(file_stream, pixel_color, samples_per_pixel);
@@ -62,13 +64,16 @@ private:
     point3 pixel00_loc;         // Location of pixel 0, 0
     vec3   pixel_delta_u;       // Offset to pixel to the right
     vec3   pixel_delta_v;       // Offset to pixel below
-    vec3 u, v, w;               // Camera basis vectors
+    vec3   u, v, w;             // Camera basis vectors
     vec3   defocus_disk_u;      // Defocus disk horizontal radius
     vec3   defocus_disk_v;      // Defocus disk vertical radius
+    int    num_cpu_threads;     // Number of threads to use for the cpu render, returned by OpenMP
     std::ofstream file_stream;  // Output file to write to
 
     void initialize() {
         file_stream.open(FILE_OUTPUT, std::ios::out | std::ios::trunc);
+
+        num_cpu_threads = omp_get_num_procs(); // Get CPU Threads from OpenMP
 
         // Calculate image height from width
         image_height = static_cast<int>(image_width / aspect_ratio);
@@ -111,7 +116,7 @@ private:
         return center + (p[0] * defocus_disk_u) + (p[1] * defocus_disk_v);
     }
 
-    color ray_color(const ray& r, int depth, const hittable& world) const{
+    color ray_color(const ray& r, const int depth, const hittable& world) const{
         hit_record hitrec;
 
         if (depth <= 0) {
@@ -134,7 +139,7 @@ private:
 
     // Get a randomly-sampled camera ray for the pixel at location i,j, originating from
     // the camera defocus disk.
-    ray get_ray(int i, int j) const {
+    ray get_ray(const int i, const int j) const {
         auto pixel_center = pixel00_loc + (i * pixel_delta_u) + (j * pixel_delta_v); // Default center
         auto pixel_sample = pixel_center + pixel_sample_square(); // Random offset added↑ sample point
 
